@@ -52,7 +52,15 @@ export default function SignupPage() {
                         </div>
                     </div>
 
-                    <form action={signup} className="space-y-4">
+                    <form action={() => {
+                        startTransition(async () => {
+                            const formData = new FormData(document.querySelector('form') as HTMLFormElement);
+                            const result = await signup(formData);
+                            if (result?.error) {
+                                alert(result.error); // Simple error handling for now
+                            }
+                        });
+                    }} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Full Name</Label>
                             <Input id="name" name="name" type="text" placeholder="John Doe" required />
