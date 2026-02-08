@@ -73,12 +73,20 @@ export const Sidebar = () => {
                 </div>
             </div>
             <div className="px-3 py-2">
-                <Link href="/login" className="text-zinc-400 text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-red-500 hover:bg-red-500/10 rounded-lg transition">
+                <button
+                    onClick={async () => {
+                        const { createClient } = await import("@/lib/supabase/client");
+                        const supabase = createClient();
+                        await supabase.auth.signOut();
+                        window.location.href = "/login";
+                    }}
+                    className="text-zinc-400 text-sm group flex p-3 w-full justify-start font-medium cursor-pointer hover:text-red-500 hover:bg-red-500/10 rounded-lg transition"
+                >
                     <div className="flex items-center flex-1">
                         <LogOut className="h-5 w-5 mr-3 text-red-500" />
                         Sign Out
                     </div>
-                </Link>
+                </button>
             </div>
         </div>
     );
