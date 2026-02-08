@@ -83,7 +83,7 @@ export async function uploadKnowledgeBase(formData: FormData) {
     backendFormData.append('restaurant_id', restaurant.id)
 
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://127.0.0.1:8000'}/api/v1/rag/upload`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/api/v1/rag/upload`, {
             method: 'POST',
             body: backendFormData,
             // Note: Content-Type header is automatically set by fetch with FormData
