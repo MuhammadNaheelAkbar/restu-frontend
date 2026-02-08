@@ -52,7 +52,15 @@ export default function LoginPage() {
                         </div>
                     </div>
 
-                    <form action={login} className="space-y-4">
+                    <form action={() => {
+                        startTransition(async () => {
+                            const formData = new FormData(document.querySelector('form') as HTMLFormElement);
+                            const result = await login(formData);
+                            if (result?.error) {
+                                alert(result.error); // Simple error handling for now
+                            }
+                        });
+                    }} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input id="email" name="email" type="email" placeholder="restaurant@example.com" required />
