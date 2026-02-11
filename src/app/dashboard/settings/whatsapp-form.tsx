@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Lock, MessageCircle, Info, Copy } from "lucide-react";
 import { saveWhatsAppConfig, getWebhookConfig } from "./whatsapp-actions";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
     Accordion,
     AccordionContent,
@@ -15,7 +14,7 @@ import {
 
 export function WhatsAppConfigForm() {
     const [isPending, startTransition] = useTransition();
-    const [webhookConfig, setWebhookConfig] = useState<{ verifyToken: string, webhookPath: string } | null>(null);
+    const [webhookConfig, setWebhookConfig] = useState<{ verifyToken: string, webhookUrl: string } | null>(null);
 
     useEffect(() => {
         // Fetch config
