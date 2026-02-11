@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
 import { CurrencyCombobox } from "@/components/ui/currency-combobox";
 import { saveUserLLMConfig } from "./llm-actions";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Upload } from "lucide-react";
+import { Lock, Upload, MessageCircle } from "lucide-react";
 import { uploadKnowledgeBase } from "./actions";
+import { toast } from "sonner";
+import { WhatsAppConfigForm } from "./whatsapp-form";
 
 export function SettingsClient({ restaurant }: { restaurant: any }) {
     const [currency, setCurrency] = useState(restaurant.currency || "USD"); // Default to USD code
@@ -22,9 +22,9 @@ export function SettingsClient({ restaurant }: { restaurant: any }) {
         startTransition(async () => {
             const result = await updateRestaurant(formData);
             if (result.error) {
-                alert(`Error: ${result.error}`);
+                toast.error(`Error: ${result.error}`);
             } else {
-                alert("Settings saved successfully!");
+                toast.success("Settings saved successfully!");
             }
         });
     };
@@ -67,6 +67,8 @@ export function SettingsClient({ restaurant }: { restaurant: any }) {
                                 name="phone_number"
                                 defaultValue={restaurant.phone_number}
                                 placeholder="e.g. +1234567890"
+                                pattern="^\+?[1-9]\d{1,14}$"
+                                title="Please enter a valid international phone number (E.164 format, e.g., +1234567890)"
                             />
                             <p className="text-xs text-muted-foreground">The AI will use this to identify your store.</p>
                         </div>
@@ -105,6 +107,23 @@ export function SettingsClient({ restaurant }: { restaurant: any }) {
                 </CardContent>
             </Card>
 
+
+            <Card className="border-green-200 bg-green-50/30">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <MessageCircle className="h-5 w-5 text-green-600" />
+                        WhatsApp Configuration
+                        <Badge variant="outline" className="text-xs font-normal border-green-200 text-green-700 bg-green-100">BYOK</Badge>
+                    </CardTitle>
+                    <CardDescription>
+                        Connect your own WhatsApp Business Number. You get full control over the number and branding.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <WhatsAppConfigForm />
+                </CardContent>
+            </Card>
+
             <Card className="border-blue-200 bg-blue-50/30">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -132,13 +151,18 @@ function KnowledgeBaseUploader() {
 
     const handleUpload = (formData: FormData) => {
         startTransition(async () => {
-            const result = await uploadKnowledgeBase(formData);
-            if (result.error) {
-                alert(result.error);
-            } else {
-                alert(result.message || "Document uploaded successfully!");
-                setFileName(null);
-            }
+            const promise = uploadKnowledgeBase(formData);
+
+            toast.promise(promise, {
+                loading: 'Uploading document...',
+                success: (result) => {
+                    setFileName(null);
+                    return result.message || "Document uploaded successfully!";
+                },
+                error: (result) => {
+                    return result.error || "Failed to upload document";
+                }
+            });
         });
     };
 
@@ -174,16 +198,13 @@ function KnowledgeBaseUploader() {
 function LLMConfigForm() {
     const [isPending, startTransition] = useTransition();
 
-    // We don't fetch the current config for display effectively because the key is secret.
-    // We could fetch base_url/model to show current state, but simplified for now.
-
     const handleSave = (formData: FormData) => {
         startTransition(async () => {
             const result = await saveUserLLMConfig(formData);
             if (result.error) {
-                alert(`Error: ${result.error}`);
+                toast.error(result.error);
             } else {
-                alert(result.message);
+                toast.success(result.message || "Configuration saved successfully");
             }
         });
     };

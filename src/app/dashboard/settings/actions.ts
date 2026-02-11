@@ -54,6 +54,12 @@ export async function updateRestaurant(formData: FormData) {
     const currency = formData.get('currency') as string
     const id = formData.get('id') as string
 
+    // Validate Phone Number (E.164-ish)
+    const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+    if (phone_number && !phoneRegex.test(phone_number)) {
+        return { error: "Invalid phone number format. Use E.164 (e.g., +1234567890)" }
+    }
+
     const { error } = await supabase
         .from('restaurants')
         .update({ name, phone_number, address, currency })
